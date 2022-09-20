@@ -1,61 +1,77 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {Block} from './Block';
+import React, {useEffect, useState} from 'react';
 import './index.scss';
+import Collection from "./Collection";
 
 function App() {
-    // const [rates, setRates] = useState({});
-    const ratesRef = useRef({});
+    const [categoryId, setCategoryId] = useState(0);
+    const [collections, setCollections] = useState([]);
+    const [searchValue, setSearchValue] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
+    const [page, setPage] = useState(1);
 
-    const [fromValue, setFromValue] = useState(0);
-    const [toValue, setToValue] = useState(1);
-    const [fromCurrency, setFromCurrency] = useState('CZK');
-    const [toCurrency, setToCurrency] = useState('USD');
-
-    const onChangeFromValue = (value) => {
-        const convertFromValue = value / ratesRef.current[fromCurrency];
-        const result = convertFromValue * ratesRef.current[toCurrency];
-        setFromValue(value)
-        setToValue(result.toFixed(3))
-    }
-    const onChangeToValue = (value) => {
-        const convertToValue = (ratesRef.current[fromCurrency] / ratesRef.current[toCurrency]) * value;
-        setToValue(value)
-        setFromValue(convertToValue.toFixed(3))
-    }
+    const categories = [
+        {"name": "All"},
+        {"name": "Sea"},
+        {"name": "Mountains"},
+        {"name": "Architecture"},
+        {"name": "Cities"}
+    ];
 
     useEffect(() => {
-        fetch('https://cdn.cur.su/api/latest.json')
+        setIsLoading(true);
+        const category = categoryId ? `category=${categoryId}` : '';
+        fetch(`https://6329d20d4c626ff832cb6556.mockapi.io/collections?page=${page}&limit=3&${category}`)
             .then(res => res.json())
             .then(json => {
-                // setRates(json.rates)
-                ratesRef.current = json.rates;
-                onChangeToValue(1)
+                setCollections(json)
             })
             .catch(err => {
                 console.warn(err)
-                alert('Error occurred')
+                alert('error')
             })
-    }, [])
-
-     useEffect(() => {
-        onChangeFromValue(fromValue);
-    }, [fromCurrency])
-
-    useEffect(() => {
-        onChangeToValue(toValue);
-    }, [toCurrency])
+            .finally(() => setIsLoading(false))
+    }, [categoryId, page]);
 
 
     return (
         <div className="App">
-            <Block value={fromValue}
-                   currency={fromCurrency}
-                   onChangeCurrency={setFromCurrency}
-                   onChangeValue={onChangeFromValue}/>
-            <Block value={toValue}
-                   currency={toCurrency}
-                   onChangeCurrency={setToCurrency}
-                   onChangeValue={onChangeToValue}/>
+            <h1>My photo collection</h1>
+            <div className="top">
+                <ul className="tags">
+                    {categories.map((obj, i) =>
+                        <li className={categoryId === i ? 'active' : ''}
+                            key={obj.name}
+                            onClick={() => setCategoryId(i)}>{obj.name}</li>)}
+                </ul>
+                <input onChange={(e) => {
+                    setSearchValue(e.currentTarget.value)
+                }}
+                       className="search-input"
+                       placeholder="Search"/>
+            </div>
+            <div className="content">
+                {isLoading ? (<h2>Loading...</h2>) :
+                    (collections.filter(obj => obj.name.toLowerCase().includes(searchValue.toLowerCase()))
+                            .map((obj, index) => (
+                                <Collection key={obj.index}
+                                            name={obj.name}
+                                            images={obj.photos}
+                                />
+                            ))
+                    )
+                }
+
+            </div>
+            <ul className="pagination">
+                {
+                    [...Array(5)].map((_, i) => <li
+                        className={page === (i + 1) ? 'active' : ''}
+                        key={i}
+                        onClick={() => setPage(i + 1)}>
+                        {i + 1}
+                    </li>)
+                }
+            </ul>
         </div>
     );
 }
