@@ -1,44 +1,63 @@
-import React, {useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
+import {Block} from './Block';
 import './index.scss';
-import Modal from "./Modal";
 
-
-//------------------------classes------------------------------
 function App() {
-    const [open, setOpen] = useState(false);
+    // const [rates, setRates] = useState({});
+    const ratesRef = useRef({});
+
+    const [fromValue, setFromValue] = useState(0);
+    const [toValue, setToValue] = useState(1);
+    const [fromCurrency, setFromCurrency] = useState('CZK');
+    const [toCurrency, setToCurrency] = useState('USD');
+
+    const onChangeFromValue = (value) => {
+        const convertFromValue = value / ratesRef.current[fromCurrency];
+        const result = convertFromValue * ratesRef.current[toCurrency];
+        setFromValue(value)
+        setToValue(result.toFixed(3))
+    }
+    const onChangeToValue = (value) => {
+        const convertToValue = (ratesRef.current[fromCurrency] / ratesRef.current[toCurrency]) * value;
+        setToValue(value)
+        setFromValue(convertToValue.toFixed(3))
+    }
+
+    useEffect(() => {
+        fetch('https://cdn.cur.su/api/latest.json')
+            .then(res => res.json())
+            .then(json => {
+                // setRates(json.rates)
+                ratesRef.current = json.rates;
+                onChangeToValue(1)
+            })
+            .catch(err => {
+                console.warn(err)
+                alert('Error occurred')
+            })
+    }, [])
+
+     useEffect(() => {
+        onChangeFromValue(fromValue);
+    }, [fromCurrency])
+
+    useEffect(() => {
+        onChangeToValue(toValue);
+    }, [toCurrency])
+
 
     return (
-        <Modal open={open} setOpen={setOpen}>
-            <img src="https://media2.giphy.com/media/xT0xeJpnrWC4XWblEk/giphy.gif" />
-            <h3>This is modal</h3>
-        </Modal>
+        <div className="App">
+            <Block value={fromValue}
+                   currency={fromCurrency}
+                   onChangeCurrency={setFromCurrency}
+                   onChangeValue={onChangeFromValue}/>
+            <Block value={toValue}
+                   currency={toCurrency}
+                   onChangeCurrency={setToCurrency}
+                   onChangeValue={onChangeToValue}/>
+        </div>
     );
 }
 
 export default App;
-
-//-------------------------Conditional Rendering------------------------
-// function App() {
-//
-//     const [open, setOpen] = useState(false);
-//     const onClickHandler = () => {
-//         setOpen(!open)
-//     }
-//
-//   return (
-//     <div className="App">
-//       <button onClick={onClickHandler} className="open-modal-btn">✨ Открыть окно</button>
-//       {open && <div className="overlay">
-//         <div className="modal">
-//           <svg onClick={onClickHandler} height="200" viewBox="0 0 200 200" width="200">
-//             <title />
-//             <path d="M114,100l49-49a9.9,9.9,0,0,0-14-14L100,86,51,37A9.9,9.9,0,0,0,37,51l49,49L37,149a9.9,9.9,0,0,0,14,14l49-49,49,49a9.9,9.9,0,0,0,14-14Z" />
-//           </svg>
-//           <img src="https://media2.giphy.com/media/xT0xeJpnrWC4XWblEk/giphy.gif" />
-//         </div>
-//       </div>}
-//     </div>
-//   );
-// }
-//
-// export default App;
