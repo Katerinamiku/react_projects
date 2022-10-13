@@ -17,5 +17,5 @@ An example of users list. Fetch for getting users is used, search possibility is
 ### 🌿 Branch: converter
 App of currency converting. Fetch for actual currency is used.
 
-### 🌿 Branch: Ветка: photoCollection
+### 🌿 Branch: photoCollection
 Photo collection gallery. Fetch for photoes is used (mocapi), filtration by category, search.
