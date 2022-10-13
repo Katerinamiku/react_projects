@@ -1,22 +1,21 @@
-Проекты для начинающих на ReactJS
-Все проекты разработаны для бесплатного курса на канале Archakov Blog
+# React JS little projects for begginers
+Some little projects for React begginers. 
+Each project is stored in a branch.
 
-Каждый проект хранится в отдельной ветке.
+### 🌿  Branch: counter
+Simple click counter. 
 
-Счётчик
-🌿 Ветка: counter
+### 🌿 Branch: modal
+An example of modal window. 
 
-Модальное окно
-🌿 Ветка: modal
+### 🌿 Branch: quiz
+Simple app game: questionere with some variants and score counts.
 
-Quiz (опросник)
-🌿 Ветка: quiz
+### 🌿 Branch: users
+An example of users list. Fetch for getting users is used, search possibility is implemented.
 
-Список гостей (пользователей)
-🌿 Ветка: users
+### 🌿 Branch: converter
+App of currency converting. Fetch for actual currency is used.
 
-Конвертер валют
-🌿 Ветка: currency-converter
-
-Photo Collection
-🌿 Ветка: photos
+### 🌿 Branch: Ветка: photoCollection
+Photo collection gallery. Fetch for photoes is used (mocapi), filtration by category, search.
